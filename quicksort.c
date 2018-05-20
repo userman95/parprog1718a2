@@ -1,25 +1,25 @@
 #include <stdio.h>
-#include <string.h>
+#include <string.h> // *** Πηγα να το δοκιμασω με το memcpy (να προστιθενται τα sorted στοιχεια το ενα μετα το αλλο σε ένα πίνακα) αλλα δεν τα κατάφερα και το άφησα έτσι.
 #include <stdlib.h>
 #include <pthread.h>
 
-#define N 			10      /* Queue Size (= Mhnymata Paketwn-Ergasias) */
+#define N 	    10          /* Queue Size (= Mhnymata Paketwn-Ergasias) */
 #define THREAD_POOL 4		/* Number of threads */
 #define SIZE        200		/* Array Size */
-#define CUTOFF 		10		/* Sorting limit */
+#define CUTOFF 	    10		/* Sorting limit */
 
 /* struct of info passed to each thread */
 struct info_msg {
 	/* Paketo ergasias. */
 	double *arr;				// Partition-Array 
-	int size;					// Partition's-Array size
+	int size;				// Partition's-Array size
 };
 
-struct info_msg queue_msg[N];	/* Oura-Ergasiwn twn Messages*/
+struct info_msg queue_msg[N];	// Oura-Ergasiwn twn Messages
 int head=0;
 int tail = 0;
 
-int sorted_elems = 0;			// Arithmos twn taksinomhmenwn stoixeiwn
+int sorted_elems = 0;		// Arithmos twn taksinomhmenwn stoixeiwn
 
 // Mhnyma termatismou.
 int shutdown_status=0;
@@ -33,7 +33,7 @@ pthread_mutex_t check_mtx = PTHREAD_MUTEX_INITIALIZER;
 
 // Condition Variables
 pthread_cond_t full_queue = PTHREAD_COND_INITIALIZER;	   // signals when queue is not full (receiver waits on this)
-pthread_cond_t unsorted = PTHREAD_COND_INITIALIZER;		   // signals when sorting-algorithm is finishhed.
+pthread_cond_t unsorted = PTHREAD_COND_INITIALIZER;	   // signals when sorting-algorithm is finishhed.
 pthread_cond_t empty_queue = PTHREAD_COND_INITIALIZER;	   // signals when just added a package in queue.
 pthread_cond_t avail_partition = PTHREAD_COND_INITIALIZER; // signals when has available partition.
 
@@ -126,7 +126,7 @@ void *producer(void *args){
 	    queue_msg[tail].size  = pos;
 	    // Move forward tail to next empty slot.
 		tail++;
-		if(tail>N){						// Reset tail back at start of FIFO.
+		if(tail>N){				// Reset tail back at start of FIFO.
 			tail=0;                       
 		}	
 		pthread_cond_signal(&empty_queue);	// signal sthn empty_queue.
@@ -134,7 +134,7 @@ void *producer(void *args){
 	    //2nd package:
 	    while((tail+1)%N == head){					// When queue is FULL. NOTE: we use while instead of if!
 			printf("(P) waits in full_queue 2\n");
-			pthread_cond_wait(&full_queue, &queue_mtx);		// wait sthn full_queue
+			pthread_cond_wait(&full_queue, &queue_mtx);	// wait sthn full_queue
 		}
 	    queue_msg[tail].arr   = init_arr+pos;
 	    queue_msg[tail].size  = SIZE-pos;
